@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Без Рутины — автоматизация рутинных задач бизнеса</title>
+<meta name="description" content="Освобождаем сотрудников от ручной работы: обработка заявок, отчёты, синхронизация систем, рассылки. Считаем экономию за минуту.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Sora:wght@400;500;600;700;800&display=swap">
+<style>
+  :root{
+    --bg:#0a0e15;
+    --bg-2:#0e131c;
+    --surface:#131926;
+    --surface-2:#19202f;
+    --line:rgba(233,238,246,.09);
+    --line-strong:rgba(233,238,246,.16);
+    --text:#eef1f6;
+    --text-soft:#909ab0;
+    --text-dim:#5c637a;
+    --green:#2fe6a4;
+    --green-soft:#8ff2ce;
+    --green-dim:rgba(47,230,164,.13);
+    --green-line:rgba(47,230,164,.4);
+    --orange:#ff8a4c;
+    --orange-soft:#ffb98c;
+    --orange-dim:rgba(255,138,76,.13);
+    --orange-line:rgba(255,138,76,.4);
+    --blue:#4dc3ff;
+    --red:#ff6b7a;
+    --r-lg:20px;
+    --r-md:14px;
+    --r-sm:9px;
+    --font-display:'Sora','Segoe UI',system-ui,sans-serif;
+    --font-mono:'JetBrains Mono','Consolas',monospace;
+    --fs-hero:clamp(2.1rem, 1.2rem + 4.4vw, 3.8rem);
+    --fs-h2:clamp(1.7rem, 1.25rem + 2vw, 2.5rem);
+    --wrap:1180px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;color-scheme:dark}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+  body{
+    margin:0;background:var(--bg);color:var(--text);font-family:var(--font-display);
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;font-size:16px;
+    background-image:radial-gradient(60% 50% at 85% -5%, rgba(47,230,164,.08), transparent 60%),
+                      radial-gradient(45% 40% at 8% 15%, rgba(255,138,76,.06), transparent 60%);
+    background-repeat:no-repeat;
+  }
+  h1,h2,h3{text-wrap:balance;margin:0;line-height:1.12;font-weight:700;letter-spacing:-.01em}
+  p{margin:0}
+  a{color:inherit;text-decoration:none}
+  svg{display:block}
+  .mono{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+  .wrap{max-width:var(--wrap);margin-inline:auto;padding-inline:20px}
+  @media (min-width:768px){ .wrap{padding-inline:34px} }
+  @media (min-width:1440px){ .wrap{padding-inline:44px} }
+
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);
+    font-size:.78rem;letter-spacing:.06em;color:var(--green-soft);
+  }
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--green);box-shadow:0 0 10px var(--green)}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:.85em 1.5em;border-radius:var(--r-sm);font-weight:600;font-size:.95rem;
+    border:1.5px solid transparent;cursor:pointer;font-family:var(--font-display);
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .btn-primary{background:var(--green);color:#052018}
+  .btn-primary:hover{background:var(--green-soft);transform:translateY(-2px);box-shadow:0 10px 24px rgba(47,230,164,.25)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-ghost{border-color:var(--line-strong);color:var(--text)}
+  .btn-ghost:hover{border-color:var(--green);color:var(--green-soft);transform:translateY(-2px)}
+  .btn-block{width:100%}
+
+  /* nav */
+  .nav{position:sticky;top:0;z-index:50;background:rgba(10,14,21,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-inner{max-width:var(--wrap);margin-inline:auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+  @media (min-width:768px){ .nav-inner{padding:15px 34px} }
+  .brand{font-weight:700;font-size:1.1rem;display:flex;align-items:center;gap:9px}
+  .brand-mark{width:32px;height:32px;border-radius:8px;background:var(--green-dim);border:1px solid var(--green-line);display:flex;align-items:center;justify-content:center;color:var(--green);flex-shrink:0}
+  .brand-mark svg{width:16px;height:16px}
+  .nav-links{display:none;gap:24px;font-size:.88rem;color:var(--text-soft)}
+  .nav-links a:hover{color:var(--text)}
+  @media (min-width:960px){ .nav-links{display:flex} }
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .nav-cta{display:none}
+  @media (min-width:560px){ .nav-cta{display:inline-flex} }
+  .nav-toggle{display:flex;width:40px;height:40px;border-radius:9px;border:1px solid var(--line-strong);background:transparent;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+  @media (min-width:960px){ .nav-toggle{display:none} }
+  .nav-toggle svg{width:19px;height:19px;color:var(--text)}
+  .nav-toggle .icon-close{display:none}
+  .nav-toggle[aria-expanded="true"] .icon-menu{display:none}
+  .nav-toggle[aria-expanded="true"] .icon-close{display:block}
+  .nav-mobile{max-height:0;overflow:hidden;transition:max-height .3s ease;background:var(--surface);border-bottom:1px solid var(--line)}
+  .nav-mobile.is-open{max-height:360px}
+  .nav-mobile-inner{padding:6px 20px 18px;display:flex;flex-direction:column}
+  .nav-mobile a{padding:12px 4px;border-bottom:1px solid var(--line);color:var(--text-soft);font-size:.95rem}
+  .nav-mobile a:last-child{border-bottom:none;color:var(--green-soft)}
+
+  section{padding-block:60px;scroll-margin-top:76px}
+  @media (min-width:768px){ section{padding-block:96px} }
+  section[data-tone="surface"]{background:var(--bg-2);border-block:1px solid var(--line)}
+
+  .reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease, transform .65s ease}
+  .reveal.is-in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){ .reveal{opacity:1!important;transform:none!important;transition:none!important} }
+
+  .section-head{max-width:640px}
+  .section-head h2{margin-top:12px}
+  .section-head p{margin-top:14px;font-size:1.02rem;line-height:1.6;color:var(--text-soft)}
+
+  .panel{
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-lg);
+    overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.45);
+  }
+  .panel-head{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+  .panel-dot{width:9px;height:9px;border-radius:50%;background:var(--text-dim)}
+  .panel-dot:nth-child(2){background:#ffb020;opacity:.5}
+  .panel-title{margin-left:6px;font-family:var(--font-mono);font-size:.78rem;color:var(--text-dim)}
+  .panel-body{padding:22px}
+
+  /* ---------- hero ---------- */
+  .hero{padding-top:52px}
+  .hero-grid{display:grid;gap:44px;align-items:center}
+  @media (min-width:980px){ .hero-grid{grid-template-columns:1.05fr .95fr;gap:52px} }
+  .hero-copy h1{font-size:var(--fs-hero)}
+  .hero-copy h1 .accent{color:var(--green)}
+  .hero-copy p.lead{margin-top:20px;font-size:1.08rem;line-height:1.62;color:var(--text-soft);max-width:52ch}
+  .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+  .hero-stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:38px;border-top:1px solid var(--line);padding-top:22px}
+  .hero-stats div{display:flex;flex-direction:column;gap:2px}
+  .hero-stats strong{font-family:var(--font-mono);font-size:1.4rem;color:var(--text)}
+  .hero-stats span{font-size:.8rem;color:var(--text-dim)}
+
+  /* before/after compare */
+  .compare{position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--line-strong);box-shadow:0 30px 70px rgba(0,0,0,.45);aspect-ratio:4/5;user-select:none;touch-action:pan-y}
+  @media (min-width:560px){ .compare{aspect-ratio:5/4.6} }
+  .compare-layer{position:absolute;inset:0;width:100%;display:flex;flex-direction:column;padding:24px}
+  .compare-after{background:radial-gradient(120% 100% at 100% 0%, rgba(47,230,164,.14), transparent 55%), var(--bg-2);align-items:flex-end;text-align:right}
+  .compare-before{background:radial-gradient(120% 100% at 0% 0%, rgba(255,138,76,.16), transparent 55%), var(--bg-2);clip-path:inset(0 48% 0 0);will-change:clip-path}
+  .compare-pill{display:inline-flex;align-self:flex-start;align-items:center;gap:6px;font-family:var(--font-mono);font-size:.72rem;letter-spacing:.04em;padding:5px 11px;border-radius:999px;margin-bottom:16px;flex-shrink:0}
+  .compare-before .compare-pill{background:var(--orange-dim);border:1px solid var(--orange-line);color:var(--orange-soft)}
+  .compare-after .compare-pill{align-self:flex-end;background:var(--green-dim);border:1px solid var(--green-line);color:var(--green-soft)}
+  .compare-time{font-family:var(--font-mono);font-weight:700;font-size:1.9rem;margin-bottom:14px}
+  .compare-before .compare-time{color:var(--orange-soft)}
+  .compare-after .compare-time{color:var(--green-soft)}
+  .compare-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+  .compare-list li{display:flex;align-items:flex-start;gap:9px;font-size:.86rem;line-height:1.4;color:var(--text-soft)}
+  .compare-after .compare-list li{flex-direction:row-reverse}
+  .compare-list svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
+  .compare-before .compare-list svg{color:var(--orange)}
+  .compare-after .compare-list svg{color:var(--green)}
+  .compare-before .compare-list li:nth-child(2){transform:rotate(-.6deg)}
+  .compare-before .compare-list li:nth-child(3){transform:rotate(.5deg)}
+  .compare-before .compare-list li:nth-child(4){transform:rotate(-.4deg)}
+  .compare .compare-range{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;-webkit-appearance:none;appearance:none;background:transparent;z-index:3;pointer-events:none}
+  .compare-handle{position:absolute;top:0;bottom:0;left:52%;width:0;pointer-events:none;z-index:2;transform:translateX(-50%)}
+  .compare-handle::before{content:"";position:absolute;top:0;bottom:0;left:-1px;width:2px;background:var(--text);opacity:.85}
+  .compare-handle-grip{position:absolute;top:50%;left:0;transform:translate(-50%,-50%);width:42px;height:42px;border-radius:50%;background:var(--text);display:flex;align-items:center;justify-content:center;gap:2px;box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .compare-handle-grip svg{width:14px;height:14px;color:var(--bg)}
+  .compare-hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-family:var(--font-mono);font-size:.7rem;color:var(--text-dim);background:rgba(10,14,21,.7);padding:4px 10px;border-radius:999px;z-index:2;letter-spacing:.03em;pointer-events:none}
+
+  /* ---------- tasks ---------- */
+  .card-grid{display:grid;gap:18px;margin-top:44px}
+  @media (min-width:640px){ .card-grid{grid-template-columns:repeat(2,1fr)} }
+  @media (min-width:1080px){ .card-grid{grid-template-columns:repeat(4,1fr)} }
+  .task-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;
+    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  }
+  .task-card:hover{transform:translateY(-6px);box-shadow:0 20px 40px rgba(0,0,0,.35);border-color:var(--green-line)}
+  .task-icon{width:46px;height:46px;border-radius:12px;background:var(--green-dim);border:1px solid var(--green-line);display:flex;align-items:center;justify-content:center;color:var(--green);margin-bottom:16px}
+  .task-icon svg{width:22px;height:22px}
+  .task-card h3{font-size:1.05rem}
+  .task-card p{margin-top:10px;font-size:.9rem;line-height:1.55;color:var(--text-soft)}
+  .task-card .stat{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-family:var(--font-mono);font-size:.78rem;color:var(--green-soft)}
+
+  /* ---------- automation scrollytelling ---------- */
+  .auto-scroller{position:relative}
+  @media (min-width:860px){ .auto-scroller{height:320vh} }
+  .auto-sticky{padding-block:8px}
+  @media (min-width:860px){
+    .auto-sticky{position:sticky;top:76px;min-height:calc(100vh - 76px);display:flex;flex-direction:column;justify-content:center;padding-block:28px}
+  }
+  .auto-head{max-width:680px;margin-inline:auto;text-align:center;margin-bottom:8px}
+  @media (min-width:860px){ .auto-head{margin-bottom:34px} }
+  .auto-grid{display:grid;gap:26px;width:100%}
+  @media (min-width:860px){ .auto-grid{grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center} }
+
+  .auto-metrics{display:flex;flex-wrap:wrap;gap:22px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+  .auto-metric{display:flex;flex-direction:column;gap:4px}
+  .auto-metric .lbl{font-size:.72rem;color:var(--text-dim);font-family:var(--font-mono);letter-spacing:.03em;text-transform:uppercase}
+  .auto-metric strong{font-size:1.55rem}
+  .auto-metric.profit strong{color:var(--green-soft)}
+  .auto-metric.hours strong{color:var(--orange-soft)}
+
+  .auto-chart{width:100%;height:70px;margin-top:18px;overflow:visible}
+  .auto-chart path{fill:none;stroke:var(--green);stroke-width:2.5;stroke-linecap:round;transition:stroke-dashoffset .1s linear}
+  @media (prefers-reduced-motion:reduce){ .auto-chart path{transition:none} }
+
+  .auto-slots{display:flex;justify-content:space-between;gap:8px;margin-top:20px}
+  .auto-slot{
+    flex:1;aspect-ratio:1;max-width:56px;border-radius:14px;border:1.5px dashed var(--line-strong);
+    display:flex;align-items:center;justify-content:center;color:var(--text-dim);
+    transition:all .35s cubic-bezier(.2,.8,.2,1);position:relative;
+  }
+  .auto-slot svg{width:20px;height:20px;transition:color .3s ease}
+  .auto-slot.is-on{border:1.5px solid var(--green-line);background:var(--green-dim);color:var(--green);transform:scale(1.08);box-shadow:0 0 0 4px rgba(47,230,164,.08)}
+  .auto-slot.is-on svg{color:var(--green)}
+
+  .auto-list{display:flex;flex-direction:column;gap:12px}
+  .auto-row{
+    display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--r-md);padding:14px 16px;
+    transition:border-color .35s ease, background .35s ease;
+  }
+  @media (max-width:520px){ .auto-row{grid-template-columns:1fr;gap:8px} }
+  .auto-row.is-done{border-color:var(--green-line);background:var(--surface-2)}
+  .auto-row-before,.auto-row-after{display:flex;align-items:center;gap:10px;font-size:.84rem;line-height:1.4}
+  .auto-row-before svg,.auto-row-after svg{width:18px;height:18px;flex-shrink:0}
+  .auto-row-before{color:var(--orange-soft);transition:opacity .35s ease}
+  .auto-row-before svg{color:var(--orange)}
+  .auto-row.is-done .auto-row-before{opacity:.35;text-decoration:line-through;text-decoration-color:var(--orange-line)}
+  .auto-row-after{color:var(--text-dim);opacity:.4;transform:scale(.97);transition:all .35s ease}
+  .auto-row-after svg{color:var(--text-dim);transition:color .35s ease}
+  .auto-row.is-done .auto-row-after{color:var(--green-soft);opacity:1;transform:scale(1)}
+  .auto-row.is-done .auto-row-after svg{color:var(--green)}
+  .auto-arrow{width:16px;height:16px;color:var(--text-dim);flex-shrink:0}
+  @media (max-width:520px){ .auto-arrow{transform:rotate(90deg);margin-inline:auto} }
+
+  /* ---------- process ---------- */
+  .timeline{display:grid;gap:22px;margin-top:48px;position:relative}
+  @media (min-width:860px){
+    .timeline{grid-template-columns:repeat(5,1fr);gap:18px}
+    .timeline::before{content:"";position:absolute;top:26px;left:calc(100%/10);right:calc(100%/10);height:1px;background:linear-gradient(90deg, var(--green-line), var(--line) 40%, var(--line) 60%, var(--green-line));}
+  }
+  .tl-step{position:relative;display:flex;flex-direction:column;gap:14px}
+  .tl-num{
+    width:52px;height:52px;border-radius:50%;background:var(--surface);border:1.5px solid var(--green-line);
+    display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-weight:700;color:var(--green);
+    position:relative;z-index:1;font-size:.95rem;
+  }
+  .tl-step h3{font-size:1.02rem}
+  .tl-step p{font-size:.86rem;line-height:1.55;color:var(--text-soft);max-width:30ch}
+
+  /* ---------- calculator ---------- */
+  .calc{background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-lg);padding:32px;margin-top:44px;display:grid;gap:32px}
+  @media (min-width:900px){ .calc{grid-template-columns:1.1fr .9fr;padding:40px} }
+  .calc-controls{display:flex;flex-direction:column;gap:30px}
+  .slider-block label{display:flex;justify-content:space-between;align-items:baseline;font-size:.88rem;font-weight:600;margin-bottom:12px}
+  .slider-block label .val{font-family:var(--font-mono);color:var(--green-soft);font-weight:700}
+  input[type="range"]{
+    -webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:999px;
+    background:linear-gradient(90deg, var(--green) 0%, var(--green) var(--fill,50%), var(--line-strong) var(--fill,50%), var(--line-strong) 100%);
+    outline:none;
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;background:var(--green);
+    border:3px solid var(--bg);box-shadow:0 0 0 2px var(--green);cursor:pointer;
+  }
+  input[type="range"]::-moz-range-thumb{
+    width:20px;height:20px;border-radius:50%;background:var(--green);border:3px solid var(--bg);box-shadow:0 0 0 2px var(--green);cursor:pointer;
+  }
+  .slider-marks{display:flex;justify-content:space-between;margin-top:8px;font-size:.72rem;color:var(--text-dim);font-family:var(--font-mono)}
+  .calc-result{
+    background:var(--bg-2);border:1px solid var(--green-line);border-radius:var(--r-md);padding:26px;
+    display:flex;flex-direction:column;gap:14px;justify-content:center;
+  }
+  .calc-result .label{font-family:var(--font-mono);font-size:.74rem;color:var(--text-dim);letter-spacing:.04em;text-transform:uppercase}
+  .calc-result .price{font-family:var(--font-mono);font-size:2.2rem;font-weight:700;color:var(--green-soft)}
+  .calc-result .price span{font-size:1rem;color:var(--text-dim);font-weight:500}
+  .calc-result .sub{font-size:.84rem;color:var(--text-soft)}
+  .calc-result .sub strong{color:var(--text);font-family:var(--font-mono)}
+  .calc-result hr{border:none;border-top:1px solid var(--line);margin:2px 0}
+
+  /* ---------- cases ---------- */
+  .case-grid{display:grid;gap:18px;margin-top:44px}
+  @media (min-width:760px){ .case-grid{grid-template-columns:repeat(3,1fr)} }
+  .case-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:26px;display:flex;flex-direction:column;gap:14px;transition:transform .25s ease, border-color .25s ease}
+  .case-card:hover{transform:translateY(-6px);border-color:var(--green-line)}
+  .case-icon{width:42px;height:42px;border-radius:11px;background:var(--surface-2);border:1px solid var(--line-strong);display:flex;align-items:center;justify-content:center;color:var(--green)}
+  .case-icon svg{width:20px;height:20px}
+  .case-card h3{font-size:1.02rem}
+  .case-card p.text{font-size:.9rem;line-height:1.58;color:var(--text-soft)}
+  .case-stat{display:flex;gap:16px;padding-top:14px;border-top:1px solid var(--line);margin-top:auto}
+  .case-stat div{display:flex;flex-direction:column;gap:2px}
+  .case-stat strong{font-family:var(--font-mono);font-size:1.05rem;color:var(--green-soft)}
+  .case-stat span{font-size:.72rem;color:var(--text-dim)}
+
+  /* ---------- cta footer ---------- */
+  .cta-footer{background:var(--bg-2);border-top:1px solid var(--line)}
+  .cta-inner{display:flex;flex-direction:column;align-items:flex-start;gap:22px}
+  @media (min-width:860px){ .cta-inner{flex-direction:row;align-items:center;justify-content:space-between} }
+  .cta-inner h2{font-size:var(--fs-h2);max-width:16ch}
+  .cta-inner p{margin-top:12px;color:var(--text-soft);max-width:44ch;font-size:1rem;line-height:1.55}
+  .cta-actions{display:flex;flex-wrap:wrap;gap:12px}
+  .contact-row{display:flex;flex-wrap:wrap;gap:24px;margin-top:44px;padding-top:26px;border-top:1px solid var(--line);font-size:.9rem;color:var(--text-soft)}
+  .contact-row a{display:inline-flex;align-items:center;gap:8px;transition:color .15s ease}
+  .contact-row a:hover{color:var(--text)}
+  .contact-row svg{width:16px;height:16px;color:var(--green)}
+  .foot-fine{margin-top:22px;font-size:.78rem;color:var(--text-dim)}
+</style>
+</head>
+<body>
+
+<header class="nav" id="top">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="brand-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span>
+      Без Рутины
+    </a>
+    <nav class="nav-links">
+      <a href="#tasks">Задачи</a>
+      <a href="#automation">Как это работает</a>
+      <a href="#calculator">Калькулятор</a>
+      <a href="#process">Процесс</a>
+      <a href="#cases">Кейсы</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="btn btn-primary nav-cta" href="https://t.me/bez_rutiny" target="_blank" rel="noopener">Обсудить проект</a>
+      <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="navMobile" aria-label="Открыть меню">
+        <svg class="icon-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg>
+        <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="nav-mobile" id="navMobile">
+    <div class="nav-mobile-inner">
+      <a href="#tasks">Задачи</a>
+      <a href="#automation">Как это работает</a>
+      <a href="#calculator">Калькулятор</a>
+      <a href="#process">Процесс</a>
+      <a href="#cases">Кейсы</a>
+      <a href="https://t.me/bez_rutiny" target="_blank" rel="noopener">Обсудить проект →</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">АВТОМАТИЗАЦИЯ БИЗНЕС-ПРОЦЕССОВ</span>
+      <h1>Рутина отнимает часы. <span class="accent">Автоматизация отдаёт их бизнесу</span></h1>
+      <p class="lead">Настраиваем автоматическую обработку заявок, сборку отчётов, синхронизацию систем и рассылки — сотрудники перестают быть «руками» для рутинных операций и занимаются тем, что действительно даёт результат.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="https://t.me/bez_rutiny" target="_blank" rel="noopener">Обсудить проект</a>
+        <a class="btn btn-ghost" href="#calculator">Посчитать экономию</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong class="mono">до 90%</strong><span>времени на рутину сокращается</span></div>
+        <div><strong class="mono">3–10 дней</strong><span>до первого рабочего сценария</span></div>
+        <div><strong class="mono">0</strong><span>ручных копипастов после запуска</span></div>
+      </div>
+    </div>
+
+    <div class="compare" id="compare">
+      <div class="compare-layer compare-after">
+        <span class="compare-pill">СТАЛО</span>
+        <div class="compare-time mono">12 мин / день</div>
+        <ul class="compare-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Заявки распределяются сами</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Отчёт собирается автоматически</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Системы обмениваются данными сами</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Рассылка уходит по расписанию</li>
+        </ul>
+      </div>
+      <div class="compare-layer compare-before" id="compareBefore">
+        <span class="compare-pill">БЫЛО</span>
+        <div class="compare-time mono">5 часов / день</div>
+        <ul class="compare-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Заявки разбираются вручную из почты</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Отчёт сводится в Excel к вечеру</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Данные копируются между CRM и таблицами</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Письма отправляются по одному</li>
+        </ul>
+      </div>
+      <div class="compare-handle" id="compareHandle">
+        <div class="compare-handle-grip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </div>
+      <input class="compare-range" id="compareRange" type="range" min="0" max="100" value="52" aria-label="Сравнить время до и после автоматизации">
+      <span class="compare-hint">← потяните за разделитель →</span>
+    </div>
+  </div>
+</section>
+
+<section id="tasks" data-tone="surface">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">ТИПОВЫЕ ЗАДАЧИ</span>
+      <h2>Что чаще всего забирает часы у команды</h2>
+      <p>Эти процессы почти всегда одинаковы по структуре — и почти всегда полностью автоматизируемы.</p>
+    </div>
+    <div class="card-grid">
+      <div class="task-card reveal">
+        <div class="task-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg></div>
+        <h3>Обработка заявок</h3>
+        <p>Заявки с сайта, почты и мессенджеров попадают сразу в CRM, распределяются по менеджерам и не теряются.</p>
+        <div class="stat mono">−80% времени на разбор</div>
+      </div>
+      <div class="task-card reveal" style="transition-delay:.06s">
+        <div class="task-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+        <h3>Генерация отчётов</h3>
+        <p>Данные из разных источников сводятся в единый отчёт по расписанию — без ручного копирования и сверки.</p>
+        <div class="stat mono">готово к 9:00 каждый день</div>
+      </div>
+      <div class="task-card reveal" style="transition-delay:.12s">
+        <div class="task-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+        <h3>Синхронизация CRM</h3>
+        <p>Клиенты, сделки и статусы обновляются одновременно во всех системах — без дублей и расхождений.</p>
+        <div class="stat mono">обновление в реальном времени</div>
+      </div>
+      <div class="task-card reveal" style="transition-delay:.18s">
+        <div class="task-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+        <h3>Рассылки и уведомления</h3>
+        <p>Письма, SMS и сообщения в мессенджерах уходят по триггеру или расписанию — сегментированно и без ручной отправки.</p>
+        <div class="stat mono">до 10 000 адресатов/запуск</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="automation">
+  <div class="auto-scroller" id="autoScroller">
+    <div class="auto-sticky">
+      <div class="wrap">
+        <div class="section-head auto-head reveal">
+          <span class="eyebrow">КАК ЭТО РАБОТАЕТ</span>
+          <h2>Листайте вниз — бизнес меняется на ваших глазах</h2>
+          <p>Пять рутинных процессов один за другим передаются программам. Часы ручной работы падают, прибыль растёт — за счёт освободившегося времени команды.</p>
+        </div>
+      </div>
+      <div class="wrap auto-grid">
+
+        <div class="auto-hub-wrap">
+          <div class="panel">
+            <div class="panel-head">
+              <span class="panel-dot"></span><span class="panel-dot"></span><span class="panel-dot"></span>
+              <span class="panel-title">ваш бизнес · live</span>
+            </div>
+            <div class="panel-body">
+              <div class="auto-metrics">
+                <div class="auto-metric profit">
+                  <span class="lbl">Прибыль в месяц</span>
+                  <strong class="mono" id="profitVal">412 000 ₽</strong>
+                </div>
+                <div class="auto-metric hours">
+                  <span class="lbl">Рутины в день</span>
+                  <strong class="mono" id="hoursVal">5,0 ч</strong>
+                </div>
+              </div>
+              <svg class="auto-chart" viewBox="0 0 300 90" preserveAspectRatio="none">
+                <path id="autoChartLine" d="M0,80 C 60,78 90,70 120,60 C 160,48 190,40 230,26 C 260,16 280,8 300,4"/>
+              </svg>
+              <div class="auto-slots" id="autoSlots">
+                <div class="auto-slot" data-i="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></div>
+                <div class="auto-slot" data-i="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+                <div class="auto-slot" data-i="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></div>
+                <div class="auto-slot" data-i="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></div>
+                <div class="auto-slot" data-i="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="auto-list" id="autoList">
+          <div class="auto-row" data-i="0">
+            <div class="auto-row-before"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg><span>Заявки разбираются вручную из почты</span></div>
+            <svg class="auto-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <div class="auto-row-after"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg><span>Бот принимает и распределяет заявки</span></div>
+          </div>
+          <div class="auto-row" data-i="1">
+            <div class="auto-row-before"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg><span>Отчёт сводится в Excel вручную</span></div>
+            <svg class="auto-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <div class="auto-row-after"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span>Отчёт собирается сам по расписанию</span></div>
+          </div>
+          <div class="auto-row" data-i="2">
+            <div class="auto-row-before"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg><span>Данные копируются между CRM и таблицами</span></div>
+            <svg class="auto-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <div class="auto-row-after"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg><span>Системы синхронизируются сами</span></div>
+          </div>
+          <div class="auto-row" data-i="3">
+            <div class="auto-row-before"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span>Письма и звонки — по одному, вручную</span></div>
+            <svg class="auto-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <div class="auto-row-after"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>Рассылка уходит сегментами по триггеру</span></div>
+          </div>
+          <div class="auto-row" data-i="4">
+            <div class="auto-row-before"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span>Учёт показателей — в блокноте и таблицах</span></div>
+            <svg class="auto-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            <div class="auto-row-after"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/></svg><span>Дашборд считает всё в реальном времени</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="calculator" data-tone="surface">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">КАЛЬКУЛЯТОР ЭКОНОМИИ</span>
+      <h2>Сколько вы теряете на рутине прямо сейчас</h2>
+      <p>Подвиньте ползунок — расчёт часов и денег обновится сразу же.</p>
+    </div>
+    <div class="calc reveal">
+      <div class="calc-controls">
+        <div class="slider-block">
+          <label for="hoursRange">Часов в неделю на рутину <span class="val mono" id="hoursRangeVal">15</span></label>
+          <input type="range" id="hoursRange" min="3" max="40" step="1" value="15">
+          <div class="slider-marks"><span>3 ч</span><span>40 ч</span></div>
+        </div>
+        <div class="slider-block">
+          <label for="rateRange">Стоимость часа сотрудника <span class="val mono" id="rateRangeVal">900 ₽</span></label>
+          <input type="range" id="rateRange" min="300" max="3000" step="50" value="900">
+          <div class="slider-marks"><span>300 ₽</span><span>3 000 ₽</span></div>
+        </div>
+      </div>
+      <div class="calc-result">
+        <div class="label">Экономия времени</div>
+        <div class="price mono" id="calcHours">12,3 ч<span> /нед</span></div>
+        <hr>
+        <div class="label">Экономия денег</div>
+        <div class="price mono" id="calcMoney">48 200 ₽<span> /мес</span></div>
+        <div class="sub">это примерно <strong class="mono" id="calcYear">578 000 ₽</strong> в год</div>
+        <a class="btn btn-primary btn-block" href="https://t.me/bez_rutiny" target="_blank" rel="noopener">Получить точный расчёт</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="process">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">ПРОЦЕСС ВНЕДРЕНИЯ</span>
+      <h2>От аудита до поддержки — пять понятных шагов</h2>
+    </div>
+    <div class="timeline">
+      <div class="tl-step reveal">
+        <div class="tl-num">01</div>
+        <h3>Аудит процессов</h3>
+        <p>Смотрим, на чём именно теряется время — от заявки до отчёта — и находим точки автоматизации.</p>
+      </div>
+      <div class="tl-step reveal" style="transition-delay:.06s">
+        <div class="tl-num">02</div>
+        <h3>Проектирование</h3>
+        <p>Проектируем сценарий: что и как передаётся программе, что остаётся под контролем человека.</p>
+      </div>
+      <div class="tl-step reveal" style="transition-delay:.12s">
+        <div class="tl-num">03</div>
+        <h3>Разработка</h3>
+        <p>Настраиваем интеграции между CRM, почтой, таблицами и мессенджерами — без замены ваших систем.</p>
+      </div>
+      <div class="tl-step reveal" style="transition-delay:.18s">
+        <div class="tl-num">04</div>
+        <h3>Запуск и тест</h3>
+        <p>Проверяем сценарий на реальных данных параллельно со старым процессом, устраняем нестыковки.</p>
+      </div>
+      <div class="tl-step reveal" style="transition-delay:.24s">
+        <div class="tl-num">05</div>
+        <h3>Поддержка</h3>
+        <p>Донастраиваем под новые задачи и следим, чтобы автоматизация не ломалась при изменениях в системах.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="cases" data-tone="surface">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="eyebrow">КЕЙСЫ ПО НИШАМ</span>
+      <h2>Рутина везде похожа — решения тоже переносятся</h2>
+    </div>
+    <div class="case-grid">
+      <div class="case-card reveal">
+        <div class="case-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <h3>Розничная сеть</h3>
+        <p class="text">Автоматизировали сборку отчётов по продажам из пяти магазинов — раньше на это уходил целый день бухгалтера в конце недели.</p>
+        <div class="case-stat">
+          <div><strong>−1 день/нед</strong><span>ручной сверки</span></div>
+          <div><strong>5 → 1</strong><span>источник данных</span></div>
+        </div>
+      </div>
+      <div class="case-card reveal" style="transition-delay:.06s">
+        <div class="case-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 3v5h-7V8Z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+        <h3>Логистическая компания</h3>
+        <p class="text">Синхронизировали складскую систему с CRM и телефонией — статус заказа обновляется сам, без звонков «уточнить остатки».</p>
+        <div class="case-stat">
+          <div><strong>−70%</strong><span>уточняющих звонков</span></div>
+          <div><strong>реалтайм</strong><span>обновление статусов</span></div>
+        </div>
+      </div>
+      <div class="case-card reveal" style="transition-delay:.12s">
+        <div class="case-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+        <h3>Агентство услуг</h3>
+        <p class="text">Заявки с сайта и мессенджеров теперь сразу попадают в CRM с распределением по менеджерам, а прогрев клиентов идёт автоматической рассылкой.</p>
+        <div class="case-stat">
+          <div><strong>−80%</strong><span>времени на разбор лидов</span></div>
+          <div><strong>×2,4</strong><span>скорость первого ответа</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-footer">
+  <div class="wrap">
+    <div class="cta-inner reveal">
+      <div>
+        <h2>Опишите свою рутину — покажем, что автоматизировать</h2>
+        <p>15 минут в Telegram: разберём процессы, найдём, что забирает больше всего времени, и дадим ориентир по срокам и стоимости.</p>
+      </div>
+      <div class="cta-actions">
+        <a class="btn btn-primary" href="https://t.me/bez_rutiny" target="_blank" rel="noopener">Обсудить проект</a>
+        <a class="btn btn-ghost" href="mailto:hello@bez-rutiny.ru">Написать на почту</a>
+      </div>
+    </div>
+    <div class="contact-row">
+      <a href="https://t.me/bez_rutiny" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 3 3 10.5l6.5 2.3L18 6l-6 8 6.5 2.3L21 3Z"/></svg>
+        @bez_rutiny
+      </a>
+      <a href="mailto:hello@bez-rutiny.ru">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m4 7 8 6 8-6"/></svg>
+        hello@bez-rutiny.ru
+      </a>
+    </div>
+    <p class="foot-fine">Без Рутины · пример продукта для демонстрации лендинга</p>
+  </div>
+</section>
+
+<script>
+(function(){
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // mobile nav
+  var toggle = document.getElementById('navToggle');
+  var mobile = document.getElementById('navMobile');
+  toggle.addEventListener('click', function(){
+    var open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    mobile.classList.toggle('is-open', !open);
+  });
+  mobile.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){
+      toggle.setAttribute('aria-expanded', 'false');
+      mobile.classList.remove('is-open');
+    });
+  });
+
+  // scroll reveal
+  var revealEls = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduceMotion){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){ entry.target.classList.add('is-in'); io.unobserve(entry.target); }
+      });
+    }, {threshold:.14, rootMargin:'0px 0px -60px 0px'});
+    revealEls.forEach(function(el){ io.observe(el); });
+  } else {
+    revealEls.forEach(function(el){ el.classList.add('is-in'); });
+  }
+
+  // ---------- before/after compare slider ----------
+  var compareBox = document.getElementById('compare');
+  var compareRange = document.getElementById('compareRange');
+  var compareBefore = document.getElementById('compareBefore');
+  var compareHandle = document.getElementById('compareHandle');
+  function setCompare(val){
+    val = Math.max(0, Math.min(100, val));
+    compareBefore.style.clipPath = 'inset(0 ' + (100 - val) + '% 0 0)';
+    compareHandle.style.left = val + '%';
+    compareRange.value = val;
+  }
+  // keyboard (arrow keys) still goes through the native input
+  compareRange.addEventListener('input', function(){ setCompare(Number(compareRange.value)); });
+
+  // pointer drag on the whole box — direct 1:1 mapping to cursor/finger position,
+  // avoids relying on the native range thumb hit-math which was jumpy/sticky
+  var dragging = false;
+  function pctFromClientX(clientX){
+    var rect = compareBox.getBoundingClientRect();
+    return (clientX - rect.left) / rect.width * 100;
+  }
+  compareBox.addEventListener('pointerdown', function(e){
+    dragging = true;
+    compareBox.setPointerCapture(e.pointerId);
+    compareRange.focus();
+    setCompare(pctFromClientX(e.clientX));
+  });
+  compareBox.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+    setCompare(pctFromClientX(e.clientX));
+  });
+  function stopDrag(){ dragging = false; }
+  compareBox.addEventListener('pointerup', stopDrag);
+  compareBox.addEventListener('pointercancel', stopDrag);
+
+  setCompare(Number(compareRange.value));
+
+  // ---------- savings calculator ----------
+  var hoursRange = document.getElementById('hoursRange');
+  var rateRange = document.getElementById('rateRange');
+  var hoursRangeVal = document.getElementById('hoursRangeVal');
+  var rateRangeVal = document.getElementById('rateRangeVal');
+  var calcHours = document.getElementById('calcHours');
+  var calcMoney = document.getElementById('calcMoney');
+  var calcYear = document.getElementById('calcYear');
+  var AUTOMATION_SHARE = 0.82;
+
+  function updateFill(input){
+    var pct = (input.value - input.min) / (input.max - input.min) * 100;
+    input.style.setProperty('--fill', pct + '%');
+  }
+  function fmtRu(n){ return Math.round(n).toLocaleString('ru-RU'); }
+  function recalcSavings(){
+    var hours = Number(hoursRange.value);
+    var rate = Number(rateRange.value);
+    hoursRangeVal.textContent = hours;
+    rateRangeVal.textContent = fmtRu(rate) + ' ₽';
+    updateFill(hoursRange);
+    updateFill(rateRange);
+
+    var hoursSavedWeek = hours * AUTOMATION_SHARE;
+    var moneySavedMonth = hoursSavedWeek * rate * 4.33;
+    var moneySavedYear = moneySavedMonth * 12;
+
+    calcHours.innerHTML = hoursSavedWeek.toFixed(1).replace('.', ',') + ' ч<span> /нед</span>';
+    calcMoney.innerHTML = fmtRu(moneySavedMonth) + ' ₽<span> /мес</span>';
+    calcYear.textContent = fmtRu(moneySavedYear) + ' ₽';
+  }
+  hoursRange.addEventListener('input', recalcSavings);
+  rateRange.addEventListener('input', recalcSavings);
+  recalcSavings();
+
+  // ---------- automation scrollytelling ----------
+  var autoScroller = document.getElementById('autoScroller');
+  var profitVal = document.getElementById('profitVal');
+  var hoursVal = document.getElementById('hoursVal');
+  var chartPath = document.getElementById('autoChartLine');
+  var slots = Array.prototype.slice.call(document.querySelectorAll('.auto-slot'));
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.auto-row'));
+  var thresholds = [0.1, 0.3, 0.5, 0.7, 0.9];
+  var PROFIT_MIN = 412000, PROFIT_MAX = 1260000;
+  var HOURS_MIN = 5.0, HOURS_MAX = 0.6;
+  var chartLen = chartPath.getTotalLength ? chartPath.getTotalLength() : 300;
+  chartPath.style.strokeDasharray = chartLen;
+  chartPath.style.strokeDashoffset = chartLen;
+
+  function setAutoState(progress){
+    progress = Math.max(0, Math.min(1, progress));
+    var profit = PROFIT_MIN + (PROFIT_MAX - PROFIT_MIN) * progress;
+    var hours = HOURS_MIN + (HOURS_MAX - HOURS_MIN) * progress;
+    profitVal.textContent = fmtRu(profit) + ' ₽';
+    hoursVal.textContent = hours.toFixed(1).replace('.', ',') + ' ч';
+    chartPath.style.strokeDashoffset = String(chartLen * (1 - progress));
+    slots.forEach(function(slot, i){ slot.classList.toggle('is-on', progress >= thresholds[i]); });
+    rows.forEach(function(row, i){ row.classList.toggle('is-done', progress >= thresholds[i]); });
+  }
+  setAutoState(0);
+
+  var desktopMode = window.innerWidth >= 860 && !reduceMotion;
+
+  if(desktopMode){
+    var ticking = false;
+    function onScroll(){
+      if(ticking) return;
+      ticking = true;
+      requestAnimationFrame(function(){
+        var rect = autoScroller.getBoundingClientRect();
+        var total = rect.height - window.innerHeight;
+        var scrolled = -rect.top;
+        var progress;
+        if(total <= 0){ progress = rect.top < window.innerHeight / 2 ? 1 : 0; }
+        else { progress = scrolled / total; }
+        setAutoState(progress);
+        ticking = false;
+      });
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll);
+    onScroll();
+  } else {
+    var played = false;
+    function playStory(){
+      if(played) return;
+      played = true;
+      if(reduceMotion){ setAutoState(1); return; }
+      var start = null, duration = 2600;
+      function step(ts){
+        if(!start) start = ts;
+        var p = Math.min((ts - start) / duration, 1);
+        setAutoState(p);
+        if(p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+    if('IntersectionObserver' in window){
+      var autoIo = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){ playStory(); autoIo.disconnect(); }
+        });
+      }, {threshold:.35});
+      autoIo.observe(autoScroller);
+    } else {
+      playStory();
+    }
+  }
+})();
+</script>
+</body>
+</html>
